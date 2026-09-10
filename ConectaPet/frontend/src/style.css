@@ -1,0 +1,1029 @@
+/* ==========================================
+   CONFIGURAÇÕES GERAIS
+========================================== */
+
+* {
+  box-sizing: border-box;
+
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, sans-serif;
+
+  margin: 0;
+  padding: 0;
+
+  background: #f5eff9;
+
+  color: #3d2947;
+}
+
+
+/* ==========================================
+   MENU
+========================================== */
+
+.menu {
+  position: sticky;
+
+  top: 0;
+
+  width: 100%;
+
+  min-height: 70px;
+
+  background: #4b1f68;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 15px 40px;
+
+  z-index: 900;
+
+  box-shadow:
+          0 3px 10px
+          rgba(45, 18, 65, 0.25);
+}
+
+
+/* Logo */
+
+.logo {
+  color: #ffffff;
+
+  font-size: 24px;
+
+  font-weight: bold;
+}
+
+
+/* Links do menu */
+
+.menu nav {
+  display: flex;
+
+  gap: 25px;
+}
+
+
+.menu nav a {
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  transition:
+          color 0.2s,
+          transform 0.2s;
+}
+
+
+.menu nav a:hover {
+  color: #e1c5ef;
+
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   INÍCIO
+========================================== */
+
+.secao-inicio {
+  min-height: 650px;
+
+  padding: 80px 50px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f5eff9;
+}
+
+
+.inicio-conteudo {
+  width: 100%;
+
+  max-width: 1100px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 60px;
+}
+
+
+/* Texto do início */
+
+.inicio-texto {
+  flex: 1;
+
+  max-width: 550px;
+}
+
+
+.inicio-texto h1 {
+  text-align: left;
+
+  color: #4b1f68;
+
+  font-size: 52px;
+
+  margin: 0 0 10px;
+}
+
+
+.inicio-texto h2 {
+  color: #70408c;
+
+  font-size: 32px;
+
+  margin: 0 0 20px;
+}
+
+
+.inicio-texto p {
+  color: #5c4666;
+
+  font-size: 18px;
+
+  line-height: 1.7;
+
+  margin-bottom: 30px;
+}
+
+
+/* ==========================================
+   BOTÃO CONHECER ANIMAIS
+========================================== */
+
+.btn-conhecer {
+  padding: 15px 25px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #6a3d8f;
+
+  color: #ffffff;
+
+  font-size: 17px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition:
+          background 0.2s,
+          transform 0.2s,
+          box-shadow 0.2s;
+}
+
+
+.btn-conhecer:hover {
+  background: #4b1f68;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+          0 6px 15px
+          rgba(75, 31, 104, 0.30);
+}
+
+
+/* ==========================================
+   IMAGEM DO INÍCIO
+========================================== */
+
+.inicio-imagem {
+  flex: 1;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+
+/* Nova logo do ConectaPet */
+
+.logo-banner {
+  width: 430px;
+
+  max-width: 100%;
+
+  height: auto;
+
+  display: block;
+
+  border-radius: 20px;
+
+  box-shadow:
+          0 10px 30px
+          rgba(75, 31, 104, 0.20);
+}
+
+
+/* ==========================================
+   SOBRE NÓS
+========================================== */
+
+.secao-sobre {
+  padding: 80px 30px;
+
+  background: #ffffff;
+
+  color: #4b1f68;
+}
+
+
+.conteudo-secao {
+  width: 100%;
+
+  max-width: 1000px;
+
+  margin: 0 auto;
+}
+
+
+.secao-sobre h2 {
+  text-align: center;
+
+  color: #6a3d8f;
+
+  font-size: 36px;
+
+  margin-bottom: 30px;
+}
+
+
+.secao-sobre p {
+  color: #5c4666;
+
+  font-size: 17px;
+
+  line-height: 1.8;
+
+  margin-bottom: 20px;
+
+  text-align: justify;
+}
+
+
+/* ==========================================
+   SEÇÃO DOS ANIMAIS
+========================================== */
+
+.secao-animais {
+  padding: 80px 30px;
+
+  background: #f5eff9;
+
+  scroll-margin-top: 70px;
+}
+
+
+.titulo-animais {
+  text-align: center;
+
+  color: #4b1f68;
+
+  font-size: 36px;
+
+  margin-top: 0;
+
+  margin-bottom: 10px;
+}
+
+
+.subtitulo-animais {
+  text-align: center;
+
+  color: #6b5574;
+
+  font-size: 18px;
+
+  margin-bottom: 30px;
+}
+
+
+/* ==========================================
+   LISTA DOS ANIMAIS
+========================================== */
+
+#lista-animais {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(260px, 1fr)
+    );
+
+  gap: 25px;
+
+  margin-top: 30px;
+
+  max-width: 1200px;
+
+  margin-left: auto;
+
+  margin-right: auto;
+}
+
+
+/* ==========================================
+   CARD DO ANIMAL
+========================================== */
+
+.animal {
+  background: #ffffff;
+
+  padding: 20px;
+
+  border-radius: 20px;
+
+  border: 1px solid #e6d9ec;
+
+  box-shadow:
+          0 5px 15px
+          rgba(75, 31, 104, 0.12);
+
+  transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+}
+
+
+/* Efeito ao passar o mouse */
+
+.animal:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+          0 10px 22px
+          rgba(75, 31, 104, 0.20);
+}
+
+
+/* ==========================================
+   FOTO DO ANIMAL
+========================================== */
+
+.animal img {
+  width: 100%;
+
+  height: 220px;
+
+  object-fit: cover;
+
+  border-radius: 15px;
+
+  display: block;
+}
+
+
+/* ==========================================
+   NOME DO ANIMAL
+========================================== */
+
+.animal h2 {
+  margin-top: 15px;
+
+  margin-bottom: 15px;
+
+  color: #4b1f68;
+}
+
+
+/* ==========================================
+   TEXTOS DO CARD
+========================================== */
+
+.animal p {
+  color: #5c4666;
+
+  line-height: 1.5;
+}
+
+.animal strong {
+  color: #4b1f68;
+}
+
+
+/* ==========================================
+   BOTÃO QUERO ADOTAR
+========================================== */
+
+.btn-adotar {
+  width: 100%;
+
+  margin-top: 15px;
+
+  padding: 13px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #6a3d8f;
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+          0 3px 8px
+          rgba(75, 31, 104, 0.18);
+
+  transition:
+          background 0.2s,
+          transform 0.2s,
+          box-shadow 0.2s;
+}
+
+
+/* Mouse em cima do botão */
+
+.btn-adotar:hover {
+  background: #4b1f68;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+          0 6px 13px
+          rgba(75, 31, 104, 0.25);
+}
+
+
+/* ==========================================
+   BOTÃO ANIMAL PENDENTE
+========================================== */
+
+.btn-pendente {
+  width: 100%;
+
+  margin-top: 15px;
+
+  padding: 13px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #c8b5d1;
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: not-allowed;
+
+  opacity: 0.85;
+}
+
+
+/* ==========================================
+   CONTATO
+========================================== */
+
+.secao-contato {
+  padding: 80px 30px;
+
+  background: #ffffff;
+
+  color: #4b1f68;
+
+  scroll-margin-top: 70px;
+}
+
+
+.secao-contato h2 {
+  text-align: center;
+
+  color: #6a3d8f;
+
+  font-size: 36px;
+
+  margin-bottom: 15px;
+}
+
+
+.secao-contato > .conteudo-secao > p {
+  text-align: center;
+
+  color: #5c4666;
+
+  font-size: 18px;
+
+  margin-bottom: 40px;
+}
+
+
+/* ==========================================
+   CONTATOS
+========================================== */
+
+.contatos {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(220px, 1fr)
+    );
+
+  gap: 25px;
+}
+
+
+.contato-item {
+  background: #f5eff9;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+
+  border: 1px solid #e6d9ec;
+
+  box-shadow:
+          0 5px 15px
+          rgba(75, 31, 104, 0.10);
+}
+
+
+.contato-item > span {
+  font-size: 35px;
+}
+
+
+.contato-item h3 {
+  color: #6a3d8f;
+
+  margin: 0 0 8px;
+}
+
+
+.contato-item p {
+  color: #5c4666;
+
+  margin: 0;
+
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   RODAPÉ
+========================================== */
+
+footer {
+  background: #4b1f68;
+
+  padding: 30px;
+
+  text-align: center;
+}
+
+
+footer p {
+  color: #ffffff;
+
+  margin: 5px;
+}
+
+
+footer p:first-child {
+  font-size: 22px;
+
+  font-weight: bold;
+}
+
+
+/* ==========================================
+   FORMULÁRIO ESCONDIDO
+========================================== */
+
+/*
+   IMPORTANTE:
+
+   O formulário começa escondido.
+*/
+
+.formulario-escondido {
+  display: none !important;
+}
+
+
+/* ==========================================
+   FUNDO DO FORMULÁRIO
+========================================== */
+
+#formulario-adocao {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background:
+          rgba(45, 18, 65, 0.70);
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding: 20px;
+
+  z-index: 1000;
+}
+
+
+/*
+   Quando o JavaScript remove
+   "formulario-escondido",
+
+   o formulário aparece.
+*/
+
+#formulario-adocao:not(.formulario-escondido) {
+  display: flex;
+}
+
+
+/* ==========================================
+   CAIXA DO FORMULÁRIO
+========================================== */
+
+.formulario-conteudo {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 500px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  padding: 30px;
+
+  border-radius: 20px;
+
+  box-shadow:
+          0 15px 40px
+          rgba(45, 18, 65, 0.35);
+}
+
+
+/* ==========================================
+   TÍTULO DO FORMULÁRIO
+========================================== */
+
+.formulario-conteudo h2 {
+  text-align: center;
+
+  color: #4b1f68;
+
+  margin-top: 5px;
+}
+
+
+/* Nome do animal */
+
+.formulario-conteudo h3 {
+  text-align: center;
+
+  color: #6a3d8f;
+}
+
+
+/* Textos */
+
+.formulario-conteudo p {
+  color: #5c4666;
+}
+
+
+/* ==========================================
+   BOTÃO FECHAR
+========================================== */
+
+.btn-fechar {
+  position: absolute;
+
+  top: 12px;
+
+  right: 15px;
+
+  width: 36px;
+
+  height: 36px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #f0e7f4;
+
+  color: #4b1f68;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  transition:
+          background 0.2s,
+          transform 0.2s;
+}
+
+
+.btn-fechar:hover {
+  background: #e2d1eb;
+
+  transform: scale(1.05);
+}
+
+
+/* ==========================================
+   LABELS
+========================================== */
+
+.formulario-conteudo label {
+  display: block;
+
+  margin-top: 15px;
+
+  margin-bottom: 6px;
+
+  color: #4b1f68;
+
+  font-weight: bold;
+}
+
+
+/* ==========================================
+   INPUTS E TEXTAREA
+========================================== */
+
+.formulario-conteudo input,
+.formulario-conteudo textarea {
+  width: 100%;
+
+  padding: 12px;
+
+  border: 1px solid #d8c8df;
+
+  border-radius: 10px;
+
+  background: #faf7fc;
+
+  color: #3d2947;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition:
+          border 0.2s,
+          box-shadow 0.2s;
+}
+
+
+/* Espaço entre campos */
+
+.formulario-conteudo input {
+  min-height: 42px;
+}
+
+
+/* Textarea */
+
+.formulario-conteudo textarea {
+  resize: vertical;
+
+  min-height: 100px;
+}
+
+
+/* ==========================================
+   INPUT QUANDO CLICADO
+========================================== */
+
+.formulario-conteudo input:focus,
+.formulario-conteudo textarea:focus {
+  border-color: #6a3d8f;
+
+  box-shadow:
+          0 0 0 3px
+          rgba(106, 61, 143, 0.15);
+}
+
+
+/* ==========================================
+   BOTÃO ENVIAR
+========================================== */
+
+.btn-enviar {
+  width: 100%;
+
+  margin-top: 20px;
+
+  padding: 13px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #6a3d8f;
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+          0 4px 10px
+          rgba(75, 31, 104, 0.20);
+
+  transition:
+          background 0.2s,
+          transform 0.2s,
+          box-shadow 0.2s;
+}
+
+
+/* Mouse em cima */
+
+.btn-enviar:hover {
+  background: #4b1f68;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+          0 7px 15px
+          rgba(75, 31, 104, 0.28);
+}
+
+
+/* ==========================================
+   MENSAGEM DO FORMULÁRIO
+========================================== */
+
+#mensagem-formulario {
+  text-align: center;
+
+  margin-top: 15px;
+
+  font-weight: bold;
+
+  color: #4b1f68;
+}
+
+
+/* ==========================================
+   MENSAGEM DE ERRO DOS ANIMAIS
+========================================== */
+
+.erro-animais {
+  text-align: center;
+
+  color: #6a3d8f;
+
+  font-size: 18px;
+
+  grid-column: 1 / -1;
+}
+
+
+/* ==========================================
+   CELULAR
+========================================== */
+
+@media (max-width: 700px) {
+
+  .menu {
+    padding: 15px 20px;
+
+    flex-direction: column;
+
+    gap: 15px;
+  }
+
+
+  .menu nav {
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+  }
+
+
+  .menu nav a {
+    font-size: 14px;
+  }
+
+
+  .secao-inicio {
+    min-height: auto;
+
+    padding: 60px 20px;
+  }
+
+
+  .inicio-conteudo {
+    flex-direction: column;
+
+    text-align: center;
+  }
+
+
+  .inicio-texto {
+    max-width: 100%;
+  }
+
+
+  .inicio-texto h1 {
+    text-align: center;
+
+    font-size: 40px;
+  }
+
+
+  .inicio-texto h2 {
+    font-size: 27px;
+  }
+
+
+  .inicio-texto p {
+    font-size: 16px;
+  }
+
+
+  /* Logo no celular */
+
+  .logo-banner {
+    width: 300px;
+  }
+
+
+  .secao-sobre,
+  .secao-animais,
+  .secao-contato {
+    padding: 60px 15px;
+  }
+
+
+  .titulo-animais,
+  .secao-sobre h2,
+  .secao-contato h2 {
+    font-size: 30px;
+  }
+
+
+  #lista-animais {
+    grid-template-columns: 1fr;
+  }
+
+
+  .formulario-conteudo {
+    padding: 20px;
+  }
+
+}

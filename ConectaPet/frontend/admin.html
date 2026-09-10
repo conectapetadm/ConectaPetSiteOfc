@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ConectaPet - Administração</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background:
+                    linear-gradient(
+                            135deg,
+                            #f5f0fa,
+                            #eadcf5
+                    );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            color: #333;
+
+        }
+
+
+        /* ============================= */
+        /* CONTAINER PRINCIPAL */
+        /* ============================= */
+
+        #admin {
+
+            width: 100%;
+
+            max-width: 450px;
+
+            background-color: white;
+
+            border-radius: 22px;
+
+            overflow: hidden;
+
+            box-shadow:
+                    0 10px 35px
+                    rgba(54, 20, 80, 0.20);
+
+        }
+
+
+        /* ============================= */
+        /* ÁREA DA LOGO */
+        /* ============================= */
+
+        .logo-area {
+
+            width: 100%;
+
+            background:
+                    linear-gradient(
+                            135deg,
+                            #210035,
+                            #3b0860,
+                            #210035
+                    );
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 25px;
+
+        }
+
+
+        .logo {
+
+            width: 100%;
+
+            max-width: 300px;
+
+            height: auto;
+
+            display: block;
+
+            border-radius: 10px;
+
+        }
+
+
+        /* ============================= */
+        /* CONTEÚDO DO LOGIN */
+        /* ============================= */
+
+        .login-conteudo {
+
+            padding: 35px;
+
+        }
+
+
+        .login-conteudo h2 {
+
+            text-align: center;
+
+            color: #6a3d8f;
+
+            margin-bottom: 10px;
+
+            font-size: 24px;
+
+        }
+
+
+        .subtitulo {
+
+            text-align: center;
+
+            color: #777;
+
+            font-size: 14px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        /* ============================= */
+        /* FORMULÁRIO */
+        /* ============================= */
+
+        #formLogin {
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        #formLogin label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: bold;
+
+            color: #444;
+
+        }
+
+
+        #formLogin input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+
+            margin-bottom: 20px;
+
+            transition: 0.2s;
+
+        }
+
+
+        #formLogin input:focus {
+
+            outline: none;
+
+            border-color: #6a3d8f;
+
+            box-shadow:
+                    0 0 0 3px
+                    rgba(106, 61, 143, 0.12);
+
+        }
+
+
+        /* ============================= */
+        /* CAMPO DE SENHA COM OLHINHO */
+        /* ============================= */
+
+        .campo-senha {
+
+            position: relative;
+
+            width: 100%;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .campo-senha input {
+
+            width: 100%;
+
+            padding: 14px 50px 14px 14px;
+
+            margin-bottom: 0;
+
+        }
+
+
+        .btn-olho {
+
+            position: absolute;
+
+            right: 10px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: #6a3d8f;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            padding: 5px;
+
+            width: auto !important;
+
+        }
+
+
+        .btn-olho:hover {
+
+            background: transparent !important;
+
+            transform: translateY(-50%);
+
+        }
+
+
+        /* ============================= */
+        /* BOTÃO */
+        /* ============================= */
+
+        #formLogin > button {
+
+            width: 100%;
+
+            border: none;
+
+            background-color: #6a3d8f;
+
+            color: white;
+
+            padding: 14px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+
+        }
+
+
+        #formLogin > button:hover {
+
+            background-color: #512d70;
+
+            transform: translateY(-2px);
+
+        }
+
+
+        #formLogin > button:active {
+
+            transform: translateY(0);
+
+        }
+
+
+        /* ============================= */
+        /* MENSAGEM */
+        /* ============================= */
+
+        #mensagem {
+
+            margin-top: 20px;
+
+            text-align: center;
+
+            font-weight: bold;
+
+            color: #6a3d8f;
+
+            min-height: 20px;
+
+        }
+
+
+        /* ============================= */
+        /* RODAPÉ */
+        /* ============================= */
+
+        .rodape {
+
+            text-align: center;
+
+            color: #999;
+
+            font-size: 12px;
+
+            margin-top: 25px;
+
+        }
+
+
+        /* ============================= */
+        /* RESPONSIVO */
+        /* ============================= */
+
+        @media (max-width: 500px) {
+
+            body {
+
+                padding: 15px;
+
+            }
+
+
+            #admin {
+
+                border-radius: 18px;
+
+            }
+
+
+            .logo-area {
+
+                padding: 20px 15px;
+
+            }
+
+
+            .logo {
+
+                max-width: 260px;
+
+            }
+
+
+            .login-conteudo {
+
+                padding: 25px 20px;
+
+            }
+
+
+            .login-conteudo h2 {
+
+                font-size: 21px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div id="admin">
+
+
+    <!-- ================================= -->
+    <!-- LOGO -->
+    <!-- ================================= -->
+
+    <div class="logo-area">
+
+        <img
+                src="/logoAtualizada.png"
+                alt="Logo ConectaPet"
+                class="logo"
+        >
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- LOGIN -->
+    <!-- ================================= -->
+
+    <div class="login-conteudo">
+
+
+        <h2>
+            Área do Administrador
+        </h2>
+
+
+        <p class="subtitulo">
+            Acesso exclusivo para administração
+        </p>
+
+
+        <form id="formLogin">
+
+
+            <label for="senha">
+                Senha do administrador
+            </label>
+
+
+            <!-- CAMPO DE SENHA -->
+
+            <div class="campo-senha">
+
+                <input
+                        type="password"
+                        id="senha"
+                        placeholder="Digite a senha"
+                        required
+                >
+
+                <button
+                        type="button"
+                        class="btn-olho"
+                        id="btnOlho"
+                        aria-label="Mostrar senha"
+                >
+                    👁️
+                </button>
+
+            </div>
+
+
+            <button type="submit">
+                🔐 Entrar
+            </button>
+
+
+        </form>
+
+
+        <p id="mensagem"></p>
+
+
+        <p class="rodape">
+            🐾 ConectaPet
+            Contato do desenvolvedor para suporte
+
+            (83) 9 9863-7358
+            thay.ewe02@gmail.com .
+        </p>
+
+
+    </div>
+
+
+</div>
+
+
+<script type="module">
+
+
+    const API =
+        "http://localhost:3000";
+
+
+    const formLogin =
+        document.getElementById(
+            "formLogin"
+        );
+
+
+    const senha =
+        document.getElementById(
+            "senha"
+        );
+
+
+    const mensagem =
+        document.getElementById(
+            "mensagem"
+        );
+
+
+    /* ============================= */
+    /* MOSTRAR / OCULTAR SENHA */
+    /* ============================= */
+
+    const btnOlho =
+        document.getElementById(
+            "btnOlho"
+        );
+
+
+    btnOlho.addEventListener(
+        "click",
+        () => {
+
+            if (
+                senha.type === "password"
+            ) {
+
+                senha.type = "text";
+
+                btnOlho.textContent =
+                    "🙈";
+
+                btnOlho.setAttribute(
+                    "aria-label",
+                    "Ocultar senha"
+                );
+
+            } else {
+
+                senha.type = "password";
+
+                btnOlho.textContent =
+                    "👁️";
+
+                btnOlho.setAttribute(
+                    "aria-label",
+                    "Mostrar senha"
+                );
+
+            }
+
+        }
+    );
+
+
+    formLogin.addEventListener(
+
+        "submit",
+
+        async (evento) => {
+
+
+            evento.preventDefault();
+
+
+            mensagem.textContent =
+                "Verificando senha...";
+
+
+            try {
+
+
+                const resposta =
+                    await fetch(
+
+                        `${API}/api/admin/login`,
+
+                        {
+
+                            method:
+                                "POST",
+
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+
+                            body:
+                                JSON.stringify({
+
+                                    senha:
+                                    senha.value
+
+                                })
+
+                        }
+
+                    );
+
+
+                const dados =
+                    await resposta.json();
+
+
+                if (
+                    !resposta.ok
+                ) {
+
+
+                    mensagem.textContent =
+                        dados.erro ||
+                        "Senha incorreta.";
+
+
+                    mensagem.style.color =
+                        "#a33";
+
+
+                    return;
+
+                }
+
+
+                // =================================
+                // GUARDA O TOKEN
+                // =================================
+
+                sessionStorage.setItem(
+
+                    "adminToken",
+
+                    dados.token
+
+                );
+
+
+                mensagem.textContent =
+                    "Login realizado!";
+
+
+                mensagem.style.color =
+                    "#20753b";
+
+
+                // =================================
+                // IR PARA O PAINEL
+                // =================================
+
+                window.location.href =
+                    "/admin-painel.html";
+
+
+            } catch (erro) {
+
+
+                console.error(
+                    erro
+                );
+
+
+                mensagem.textContent =
+                    "Não foi possível conectar ao servidor.";
+
+
+                mensagem.style.color =
+                    "#a33";
+
+            }
+
+        }
+
+    );
+
+</script>
+
+
+</body>
+
+</html>

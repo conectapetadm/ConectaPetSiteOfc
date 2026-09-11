@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { google } = require("googleapis");
-const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
 
@@ -12,8 +11,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-const PORT = process.env.PORT || 3000;
 
 
 // ======================================================
@@ -70,10 +67,8 @@ const upload = multer({
 
 const auth = new google.auth.GoogleAuth({
 
-    keyFile: path.join(
-        __dirname,
-        "credentials",
-        "conecta-pet-508019-7296f96c6236.json"
+    credentials: JSON.parse(
+        process.env.GOOGLE_SERVICE_ACCOUNT_JSON
     ),
 
     scopes: [
@@ -2108,6 +2103,7 @@ app.use(
 
 app.listen(
     PORT,
+    "0.0.0.0",
     () => {
 
         console.log(

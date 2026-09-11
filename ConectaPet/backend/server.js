@@ -29,21 +29,14 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
 
         const tiposPermitidos = [
-
             "image/jpeg",
             "image/png",
             "image/gif",
             "image/webp",
             "image/avif"
-
         ];
 
-
-        if (
-            tiposPermitidos.includes(
-                file.mimetype
-            )
-        ) {
+        if (tiposPermitidos.includes(file.mimetype)) {
 
             cb(null, true);
 
@@ -78,7 +71,6 @@ const auth = new google.auth.GoogleAuth({
 
 });
 
-
 const sheets = google.sheets({
 
     version: "v4",
@@ -104,7 +96,6 @@ function criarTokenAdmin() {
 
     };
 
-
     const payload =
         Buffer
             .from(
@@ -113,7 +104,6 @@ function criarTokenAdmin() {
             .toString(
                 "base64url"
             );
-
 
     const assinatura =
         crypto
@@ -124,9 +114,7 @@ function criarTokenAdmin() {
             .update(payload)
             .digest("base64url");
 
-
     return `${payload}.${assinatura}`;
-
 }
 
 
@@ -139,32 +127,21 @@ function verificarTokenAdmin(token) {
     try {
 
         if (!token) {
-
             return false;
-
         }
-
 
         const partes =
             token.split(".");
 
-
-        if (
-            partes.length !== 2
-        ) {
-
+        if (partes.length !== 2) {
             return false;
-
         }
-
 
         const payload =
             partes[0];
 
-
         const assinatura =
             partes[1];
-
 
         const assinaturaEsperada =
             crypto
@@ -175,7 +152,6 @@ function verificarTokenAdmin(token) {
                 .update(payload)
                 .digest("base64url");
 
-
         if (
             assinatura !==
             assinaturaEsperada
@@ -184,7 +160,6 @@ function verificarTokenAdmin(token) {
             return false;
 
         }
-
 
         const dados =
             JSON.parse(
@@ -198,7 +173,6 @@ function verificarTokenAdmin(token) {
 
             );
 
-
         if (
             dados.tipo !==
             "admin"
@@ -207,7 +181,6 @@ function verificarTokenAdmin(token) {
             return false;
 
         }
-
 
         if (
             Date.now() >
@@ -218,9 +191,7 @@ function verificarTokenAdmin(token) {
 
         }
 
-
         return true;
-
 
     } catch (erro) {
 
@@ -248,7 +219,6 @@ function protegerAdmin(
                 ""
             );
 
-
     if (
         !verificarTokenAdmin(
             token
@@ -266,7 +236,6 @@ function protegerAdmin(
 
     }
 
-
     next();
 
 }
@@ -276,13 +245,11 @@ function protegerAdmin(
 // ENVIAR FOTO PARA O PIXHOST
 // ======================================================
 //
-// O Pixhost recebe a foto e devolve:
+// Agora também solicitamos o manage_url.
 //
-// show_url = página da imagem
-// th_url   = link direto da thumbnail
-//
-// Salvaremos o th_url no Google Sheets,
-// pois ele pode ser usado diretamente no <img>.
+// O manage_url é necessário para posteriormente
+// excluir a imagem do Pixhost quando o animal
+// for adotado.
 //
 // ======================================================
 
@@ -298,7 +265,6 @@ async function enviarFotoParaPixhost(
 
     }
 
-
     if (
         arquivo.size >
         10 * 1024 * 1024
@@ -310,10 +276,8 @@ async function enviarFotoParaPixhost(
 
     }
 
-
     const formulario =
         new FormData();
-
 
     const blob =
         new Blob(
@@ -326,31 +290,32 @@ async function enviarFotoParaPixhost(
             }
         );
 
-
     formulario.append(
         "img",
         blob,
         arquivo.originalname
     );
 
-
     formulario.append(
         "content_type",
         "0"
     );
-
 
     formulario.append(
         "max_th_size",
         "500"
     );
 
-
     formulario.append(
         "optimize_for_web",
         "1"
     );
 
+    // NECESSÁRIO PARA PODER EXCLUIR A FOTO DEPOIS
+    formulario.append(
+        "include_manage_url",
+        "1"
+    );
 
     const resposta =
         await fetch(
@@ -373,10 +338,18 @@ async function enviarFotoParaPixhost(
             }
         );
 
+    let dados = {};
 
-    const dados =
-        await resposta.json();
+    try {
 
+        dados =
+            await resposta.json();
+
+    } catch (erro) {
+
+        dados = {};
+
+    }
 
     if (
         !resposta.ok
@@ -387,13 +360,11 @@ async function enviarFotoParaPixhost(
             dados
         );
 
-
         throw new Error(
             "Não foi possível enviar a foto para o Pixhost."
         );
 
     }
-
 
     if (
         !dados.th_url
@@ -404,13 +375,11 @@ async function enviarFotoParaPixhost(
             dados
         );
 
-
         throw new Error(
             "O Pixhost não retornou o link da imagem."
         );
 
     }
-
 
     return {
 
@@ -418,9 +387,132 @@ async function enviarFotoParaPixhost(
             dados.show_url || "",
 
         fotoUrl:
-        dados.th_url
+        dados.th_url,
+
+        manageUrl:
+            dados.manage_url || ""
 
     };
+
+}
+
+
+// ======================================================
+// EXCLUIR FOTO DO PIXHOST
+// ======================================================
+//
+// O manage_url possui um token privado no final.
+// Esse token é usado para excluir a imagem.
+//
+// ======================================================
+
+async function excluirFotoDoPixhost(
+    manageUrl
+) {
+
+    if (!manageUrl) {
+
+        console.log(
+            "Animal não possui manage_url do Pixhost."
+        );
+
+        return false;
+
+    }
+
+    try {
+
+        const partes =
+            String(manageUrl)
+                .split("/");
+
+        const token =
+            partes[partes.length - 1];
+
+        if (!token) {
+
+            console.error(
+                "Não foi possível obter o token do Pixhost."
+            );
+
+            return false;
+
+        }
+
+        const resposta =
+            await fetch(
+                `https://api.pixhost.cc/management/${encodeURIComponent(token)}/delete`,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Accept":
+                            "application/json"
+
+                    }
+
+                }
+            );
+
+        let dados = {};
+
+        try {
+
+            dados =
+                await resposta.json();
+
+        } catch (erro) {
+
+            dados = {};
+
+        }
+
+        if (
+            !resposta.ok
+        ) {
+
+            console.error(
+                "Erro ao excluir foto do Pixhost:",
+                dados
+            );
+
+            return false;
+
+        }
+
+        if (
+            dados.success === true &&
+            dados.deleted === true
+        ) {
+
+            console.log(
+                "Foto excluída do Pixhost com sucesso."
+            );
+
+            return true;
+
+        }
+
+        console.error(
+            "Resposta inesperada ao excluir foto:",
+            dados
+        );
+
+        return false;
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao excluir foto do Pixhost:",
+            erro
+        );
+
+        return false;
+
+    }
 
 }
 
@@ -456,7 +548,6 @@ app.post(
             senha
         } = req.body;
 
-
         if (!senha) {
 
             return res
@@ -469,7 +560,6 @@ app.post(
                 });
 
         }
-
 
         if (
             senha !==
@@ -487,10 +577,8 @@ app.post(
 
         }
 
-
         const token =
             criarTokenAdmin();
-
 
         res.json({
 
@@ -548,13 +636,6 @@ app.post(
 // ======================================================
 // ANIMAIS DO SITE PÚBLICO
 // ======================================================
-//
-// Adotado não aparece.
-//
-// Disponível -> aparece
-// Pendente -> aparece
-//
-// ======================================================
 
 app.get(
     "/api/animais",
@@ -576,10 +657,8 @@ app.get(
 
                     });
 
-
             const linhas =
                 resposta.data.values || [];
-
 
             const animais =
                 linhas
@@ -597,14 +676,12 @@ app.get(
                                     linha[0] || ""
                                 ).trim();
 
-
                             const status =
                                 String(
                                     linha[8] || ""
                                 )
                                     .toLowerCase()
                                     .trim();
-
 
                             return (
 
@@ -653,11 +730,9 @@ app.get(
                         })
                     );
 
-
             res.json(
                 animais
             );
-
 
         } catch (erro) {
 
@@ -665,7 +740,6 @@ app.get(
                 "Erro ao buscar animais:",
                 erro
             );
-
 
             res
                 .status(500)
@@ -707,10 +781,8 @@ app.get(
 
                     });
 
-
             const linhas =
                 resposta.data.values || [];
-
 
             const animais =
                 linhas
@@ -728,14 +800,12 @@ app.get(
                                     linha[0] || ""
                                 ).trim();
 
-
                             const status =
                                 String(
                                     linha[8] || ""
                                 )
                                     .toLowerCase()
                                     .trim();
-
 
                             return (
 
@@ -784,11 +854,9 @@ app.get(
                         })
                     );
 
-
             res.json(
                 animais
             );
-
 
         } catch (erro) {
 
@@ -796,7 +864,6 @@ app.get(
                 "Erro ao buscar animais do administrador:",
                 erro
             );
-
 
             res
                 .status(500)
@@ -817,22 +884,9 @@ app.get(
 // CADASTRAR ANIMAL
 // ======================================================
 //
-// Agora o administrador envia:
+// A coluna J guarda o manage_url privado do Pixhost.
 //
-// nome
-// especie
-// raca
-// idade
-// sexo
-// descricao
-// foto = ARQUIVO
-//
-// O backend:
-//
-// 1. Recebe a foto
-// 2. Envia para Pixhost
-// 3. Recebe o link
-// 4. Salva o link no Google Sheets
+// A:I continuam sendo os dados normais do animal.
 //
 // ======================================================
 
@@ -860,14 +914,8 @@ app.post(
 
             } = req.body;
 
-
             const arquivoFoto =
                 req.file;
-
-
-            // ==========================================
-            // VALIDAR CAMPOS
-            // ==========================================
 
             if (
 
@@ -907,23 +955,19 @@ app.post(
                 "Enviando foto para o Pixhost..."
             );
 
-
             const resultadoFoto =
                 await enviarFotoParaPixhost(
                     arquivoFoto
                 );
 
-
             const foto =
                 resultadoFoto.fotoUrl;
 
+            const manageUrl =
+                resultadoFoto.manageUrl;
 
             console.log(
-                "Foto enviada para o Pixhost:"
-            );
-
-            console.log(
-                foto
+                "Foto enviada para o Pixhost."
             );
 
 
@@ -941,10 +985,9 @@ app.post(
                         process.env.GOOGLE_SHEET_ID,
 
                         range:
-                            "Animais!A2:I"
+                            "Animais!A2:J"
 
                     });
-
 
             const linhas =
                 resposta.data.values || [];
@@ -956,7 +999,6 @@ app.post(
 
             let maiorId = 0;
 
-
             for (
                 const linha of linhas
                 ) {
@@ -965,7 +1007,6 @@ app.post(
                     parseInt(
                         linha[0]
                     );
-
 
                 if (
                     !isNaN(id) &&
@@ -977,7 +1018,6 @@ app.post(
                 }
 
             }
-
 
             const novoId =
                 maiorId + 1;
@@ -996,7 +1036,7 @@ app.post(
                     process.env.GOOGLE_SHEET_ID,
 
                     range:
-                        "Animais!A:I",
+                        "Animais!A:J",
 
                     valueInputOption:
                         "USER_ENTERED",
@@ -1024,7 +1064,9 @@ app.post(
 
                             foto,
 
-                            "Disponível"
+                            "Disponível",
+
+                            manageUrl
 
                         ]]
 
@@ -1032,10 +1074,6 @@ app.post(
 
                 });
 
-
-            // ==========================================
-            // RESPOSTA
-            // ==========================================
 
             res.json({
 
@@ -1070,14 +1108,12 @@ app.post(
 
             });
 
-
         } catch (erro) {
 
             console.error(
                 "Erro ao cadastrar animal:",
                 erro
             );
-
 
             res
                 .status(500)
@@ -1110,11 +1146,9 @@ app.patch(
                 animalId
             } = req.params;
 
-
             const {
                 status
             } = req.body;
-
 
             const statusPermitidos = [
 
@@ -1125,7 +1159,6 @@ app.patch(
                 "Adotado"
 
             ];
-
 
             if (
                 !statusPermitidos.includes(
@@ -1145,6 +1178,10 @@ app.patch(
             }
 
 
+            // ==========================================
+            // BUSCAR ANIMAL
+            // ==========================================
+
             const resposta =
                 await sheets
                     .spreadsheets
@@ -1155,14 +1192,12 @@ app.patch(
                         process.env.GOOGLE_SHEET_ID,
 
                         range:
-                            "Animais!A2:I"
+                            "Animais!A2:J"
 
                     });
 
-
             const linhas =
                 resposta.data.values || [];
-
 
             const indiceAnimal =
                 linhas.findIndex(
@@ -1179,7 +1214,6 @@ app.patch(
 
                 );
 
-
             if (
                 indiceAnimal === -1
             ) {
@@ -1195,34 +1229,8 @@ app.patch(
 
             }
 
-
             const numeroLinha =
                 indiceAnimal + 2;
-
-
-            await sheets
-                .spreadsheets
-                .values
-                .update({
-
-                    spreadsheetId:
-                    process.env.GOOGLE_SHEET_ID,
-
-                    range:
-                        `Animais!I${numeroLinha}`,
-
-                    valueInputOption:
-                        "USER_ENTERED",
-
-                    requestBody: {
-
-                        values: [
-                            [status]
-                        ]
-
-                    }
-
-                });
 
 
             // ==========================================
@@ -1232,6 +1240,109 @@ app.patch(
             if (
                 status === "Adotado"
             ) {
+
+                // --------------------------------------
+                // PEGAR MANAGE URL DO PIXHOST
+                // --------------------------------------
+
+                const manageUrl =
+                    linhas[indiceAnimal][9] || "";
+
+
+                // --------------------------------------
+                // EXCLUIR FOTO DO PIXHOST
+                // --------------------------------------
+
+                if (manageUrl) {
+
+                    console.log(
+                        `Excluindo foto do Pixhost do animal ${animalId}...`
+                    );
+
+                    const fotoExcluida =
+                        await excluirFotoDoPixhost(
+                            manageUrl
+                        );
+
+                    if (!fotoExcluida) {
+
+                        return res
+                            .status(500)
+                            .json({
+
+                                erro:
+                                    "O animal não foi marcado como adotado porque não foi possível excluir a foto do Pixhost."
+
+                            });
+
+                    }
+
+                }
+
+
+                // --------------------------------------
+                // ALTERAR STATUS
+                // --------------------------------------
+
+                await sheets
+                    .spreadsheets
+                    .values
+                    .update({
+
+                        spreadsheetId:
+                        process.env.GOOGLE_SHEET_ID,
+
+                        range:
+                            `Animais!I${numeroLinha}`,
+
+                        valueInputOption:
+                            "USER_ENTERED",
+
+                        requestBody: {
+
+                            values: [
+                                ["Adotado"]
+                            ]
+
+                        }
+
+                    });
+
+
+                // --------------------------------------
+                // LIMPAR FOTO E MANAGE URL
+                // --------------------------------------
+
+                await sheets
+                    .spreadsheets
+                    .values
+                    .update({
+
+                        spreadsheetId:
+                        process.env.GOOGLE_SHEET_ID,
+
+                        range:
+                            `Animais!H${numeroLinha}:J${numeroLinha}`,
+
+                        valueInputOption:
+                            "USER_ENTERED",
+
+                        requestBody: {
+
+                            values: [[
+                                "",
+                                "Adotado",
+                                ""
+                            ]]
+
+                        }
+
+                    });
+
+
+                // --------------------------------------
+                // BUSCAR PEDIDOS DE ADOÇÃO
+                // --------------------------------------
 
                 const respostaAdocoes =
                     await sheets
@@ -1243,17 +1354,19 @@ app.patch(
                             process.env.GOOGLE_SHEET_ID,
 
                             range:
-                                "Adocoes!A2:H"
+                                "Adocoes!A2:I"
 
                         });
-
 
                 const linhasAdocoes =
                     respostaAdocoes.data.values || [];
 
-
                 let indiceAdocao = -1;
 
+
+                // --------------------------------------
+                // ENCONTRAR ÚLTIMO PEDIDO PENDENTE
+                // --------------------------------------
 
                 for (
                     let i =
@@ -1262,7 +1375,6 @@ app.patch(
                     i >= 0;
 
                     i--
-
                 ) {
 
                     const idAnimal =
@@ -1270,14 +1382,12 @@ app.patch(
                             linhasAdocoes[i][1] || ""
                         ).trim();
 
-
                     const statusAdocao =
                         String(
                             linhasAdocoes[i][7] || ""
                         )
                             .toLowerCase()
                             .trim();
-
 
                     if (
 
@@ -1298,6 +1408,10 @@ app.patch(
                 }
 
 
+                // --------------------------------------
+                // REGISTRAR DATA DA ADOÇÃO
+                // --------------------------------------
+
                 if (
                     indiceAdocao !== -1
                 ) {
@@ -1305,6 +1419,19 @@ app.patch(
                     const numeroLinhaAdocao =
                         indiceAdocao + 2;
 
+                    const dataAdocao =
+                        new Date()
+                            .toLocaleString(
+                                "pt-BR",
+                                {
+                                    timeZone:
+                                        "America/Sao_Paulo"
+                                }
+                            );
+
+
+                    // STATUS = ADOTADO
+                    // DATA = AGORA
 
                     await sheets
                         .spreadsheets
@@ -1315,22 +1442,54 @@ app.patch(
                             process.env.GOOGLE_SHEET_ID,
 
                             range:
-                                `Adocoes!H${numeroLinhaAdocao}`,
+                                `Adocoes!H${numeroLinhaAdocao}:I${numeroLinhaAdocao}`,
 
                             valueInputOption:
                                 "USER_ENTERED",
 
                             requestBody: {
 
-                                values: [
-                                    ["Adotado"]
-                                ]
+                                values: [[
+                                    "Adotado",
+                                    dataAdocao
+                                ]]
 
                             }
 
                         });
 
                 }
+
+
+            } else {
+
+                // ======================================
+                // DISPONÍVEL OU PENDENTE
+                // ======================================
+
+                await sheets
+                    .spreadsheets
+                    .values
+                    .update({
+
+                        spreadsheetId:
+                        process.env.GOOGLE_SHEET_ID,
+
+                        range:
+                            `Animais!I${numeroLinha}`,
+
+                        valueInputOption:
+                            "USER_ENTERED",
+
+                        requestBody: {
+
+                            values: [
+                                [status]
+                            ]
+
+                        }
+
+                    });
 
             }
 
@@ -1344,7 +1503,6 @@ app.patch(
 
             });
 
-
         } catch (erro) {
 
             console.error(
@@ -1352,12 +1510,12 @@ app.patch(
                 erro
             );
 
-
             res
                 .status(500)
                 .json({
 
                     erro:
+                        erro.message ||
                         "Não foi possível alterar o status do animal."
 
                 });
@@ -1391,7 +1549,6 @@ app.post(
                 mensagem
 
             } = req.body;
-
 
             if (
 
@@ -1431,10 +1588,8 @@ app.post(
 
                     });
 
-
             const linhas =
                 respostaAnimais.data.values || [];
-
 
             const indiceAnimal =
                 linhas.findIndex(
@@ -1451,7 +1606,6 @@ app.post(
 
                 );
 
-
             if (
                 indiceAnimal === -1
             ) {
@@ -1467,7 +1621,6 @@ app.post(
 
             }
 
-
             const statusAtual =
                 String(
                     linhas[indiceAnimal][8] ||
@@ -1475,7 +1628,6 @@ app.post(
                 )
                     .toLowerCase()
                     .trim();
-
 
             if (
                 statusAtual !==
@@ -1493,16 +1645,18 @@ app.post(
 
             }
 
-
             const nomeAnimal =
                 linhas[indiceAnimal][1] ||
                 "";
 
-
             const data =
                 new Date()
                     .toLocaleString(
-                        "pt-BR"
+                        "pt-BR",
+                        {
+                            timeZone:
+                                "America/Sao_Paulo"
+                        }
                     );
 
 
@@ -1515,7 +1669,7 @@ app.post(
                     process.env.GOOGLE_SHEET_ID,
 
                     range:
-                        "Adocoes!A:H",
+                        "Adocoes!A:I",
 
                     valueInputOption:
                         "USER_ENTERED",
@@ -1541,7 +1695,9 @@ app.post(
 
                             mensagem || "",
 
-                            "Pendente"
+                            "Pendente",
+
+                            ""
 
                         ]]
 
@@ -1552,7 +1708,6 @@ app.post(
 
             const numeroLinha =
                 indiceAnimal + 2;
-
 
             await sheets
                 .spreadsheets
@@ -1588,7 +1743,6 @@ app.post(
 
             });
 
-
         } catch (erro) {
 
             console.error(
@@ -1596,12 +1750,12 @@ app.post(
                 erro
             );
 
-
             res
                 .status(500)
                 .json({
 
                     erro:
+                        erro.message ||
                         "Não foi possível enviar o pedido de adoção."
 
                 });
@@ -1614,6 +1768,31 @@ app.post(
 
 // ======================================================
 // HISTÓRICO DE ADOÇÕES
+// ======================================================
+//
+// Mostra:
+//
+// DADOS DO ANIMAL:
+// - ID
+// - Nome
+// - Espécie
+// - Raça
+// - Idade
+// - Sexo
+// - Descrição
+// - Status
+//
+// NÃO mostra:
+// - Foto
+//
+// DADOS DA ADOÇÃO:
+// - Data do pedido
+// - Data da adoção
+// - Interessado
+// - Email
+// - Telefone
+// - Mensagem
+//
 // ======================================================
 
 app.get(
@@ -1633,10 +1812,9 @@ app.get(
                         process.env.GOOGLE_SHEET_ID,
 
                         range:
-                            "Animais!A2:I"
+                            "Animais!A2:J"
 
                     });
-
 
             const linhasAnimais =
                 respostaAnimais.data.values || [];
@@ -1651,14 +1829,12 @@ app.get(
                                 linha[0] || ""
                             ).trim();
 
-
                         const status =
                             String(
                                 linha[8] || ""
                             )
                                 .toLowerCase()
                                 .trim();
-
 
                         return (
 
@@ -1682,10 +1858,9 @@ app.get(
                         process.env.GOOGLE_SHEET_ID,
 
                         range:
-                            "Adocoes!A2:H"
+                            "Adocoes!A2:I"
 
                     });
-
 
             const linhasAdocoes =
                 respostaAdocoes.data.values || [];
@@ -1703,7 +1878,6 @@ app.get(
                         animal[0] || ""
                     ).trim();
 
-
                 let pedidoEncontrado = null;
 
 
@@ -1720,7 +1894,6 @@ app.get(
                         String(
                             linhasAdocoes[i][1] || ""
                         ).trim();
-
 
                     if (
                         idPedido === animalId
@@ -1742,14 +1915,52 @@ app.get(
 
                     historico.push({
 
-                        data:
+                        // ==================================
+                        // DATA DO PEDIDO
+                        // ==================================
+
+                        dataPedido:
                             pedidoEncontrado[0] || "",
+
+                        // ==================================
+                        // DATA DA ADOÇÃO
+                        // ==================================
+
+                        dataAdocao:
+                            pedidoEncontrado[8] || "",
+
+                        // ==================================
+                        // DADOS DO ANIMAL
+                        // ==================================
 
                         animalId:
                         animalId,
 
-                        animal:
+                        nome:
                             animal[1] || "",
+
+                        especie:
+                            animal[2] || "",
+
+                        raca:
+                            animal[3] || "",
+
+                        idade:
+                            animal[4] || "",
+
+                        sexo:
+                            animal[5] || "",
+
+                        descricao:
+                            animal[6] || "",
+
+                        status:
+                            animal[8] ||
+                            "Adotado",
+
+                        // ==================================
+                        // DADOS DO ADOTANTE
+                        // ==================================
 
                         interessado:
                             pedidoEncontrado[3] || "",
@@ -1763,9 +1974,10 @@ app.get(
                         mensagem:
                             pedidoEncontrado[6] || "",
 
-                        status:
-                            "Adotado"
+                        statusAdocao:
+                            pedidoEncontrado[7] || ""
 
+                        // NÃO COLOCAMOS "foto"
                     });
 
                 }
@@ -1777,7 +1989,6 @@ app.get(
                 historico
             );
 
-
         } catch (erro) {
 
             console.error(
@@ -1785,12 +1996,12 @@ app.get(
                 erro
             );
 
-
             res
                 .status(500)
                 .json({
 
                     erro:
+                        erro.message ||
                         "Não foi possível buscar o histórico de adoções."
 
                 });
@@ -1803,6 +2014,10 @@ app.get(
 
 // ======================================================
 // HISTÓRICO DE UM ANIMAL ESPECÍFICO
+// ======================================================
+//
+// Também não retorna a foto.
+//
 // ======================================================
 
 app.get(
@@ -1827,10 +2042,9 @@ app.get(
                         process.env.GOOGLE_SHEET_ID,
 
                         range:
-                            "Animais!A2:I"
+                            "Animais!A2:J"
 
                     });
-
 
             const linhasAnimais =
                 respostaAnimal.data.values || [];
@@ -1876,10 +2090,9 @@ app.get(
                         process.env.GOOGLE_SHEET_ID,
 
                         range:
-                            "Adocoes!A2:H"
+                            "Adocoes!A2:I"
 
                     });
-
 
             const linhasAdocoes =
                 respostaAdocoes.data.values || [];
@@ -1904,14 +2117,36 @@ app.get(
                     .map(
                         linha => ({
 
-                            data:
+                            dataPedido:
                                 linha[0] || "",
+
+                            dataAdocao:
+                                linha[8] || "",
 
                             animalId:
                                 linha[1] || "",
 
-                            animal:
-                                linha[2] || "",
+                            nome:
+                                animal[1] || "",
+
+                            especie:
+                                animal[2] || "",
+
+                            raca:
+                                animal[3] || "",
+
+                            idade:
+                                animal[4] || "",
+
+                            sexo:
+                                animal[5] || "",
+
+                            descricao:
+                                animal[6] || "",
+
+                            statusAnimal:
+                                animal[8] ||
+                                "Disponível",
 
                             interessado:
                                 linha[3] || "",
@@ -1925,9 +2160,10 @@ app.get(
                             mensagem:
                                 linha[6] || "",
 
-                            status:
+                            statusAdocao:
                                 linha[7] || ""
 
+                            // FOTO NÃO É ENVIADA
                         })
                     );
 
@@ -1959,12 +2195,11 @@ app.get(
                     descricao:
                         animal[6] || "",
 
-                    foto:
-                        animal[7] || "",
-
                     status:
                         animal[8] ||
                         "Disponível"
+
+                    // FOTO NÃO É ENVIADA
 
                 },
 
@@ -1980,12 +2215,12 @@ app.get(
                 erro
             );
 
-
             res
                 .status(500)
                 .json({
 
                     erro:
+                        erro.message ||
                         "Não foi possível buscar o histórico do animal."
 
                 });
@@ -2030,7 +2265,6 @@ app.use(
             erro
         );
 
-
         if (
             erro instanceof multer.MulterError
         ) {
@@ -2051,7 +2285,6 @@ app.use(
 
             }
 
-
             return res
                 .status(400)
                 .json({
@@ -2062,7 +2295,6 @@ app.use(
                 });
 
         }
-
 
         if (
             erro &&
@@ -2082,7 +2314,6 @@ app.use(
                 });
 
         }
-
 
         res
             .status(500)

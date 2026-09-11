@@ -1,6 +1,6 @@
 import './style.css'
 
-const API_URL = 'http://localhost:3000'
+const API_URL = 'https://conectapet-api-8h7r.onrender.com'
 
 
 // ==========================================

@@ -20,7 +20,7 @@ async function carregarAnimais() {
         <header class="menu">
 
             <div class="logo">
-                🐾 ConectaPet
+                🐾 Adotaê
             </div>
 
             <nav>
@@ -57,7 +57,7 @@ async function carregarAnimais() {
                 <div class="inicio-texto">
 
                     <h1>
-                        🐾 ConectaPet
+                        🐾 Adotaê
                     </h1>
 
                     <h2>

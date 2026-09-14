@@ -88,7 +88,7 @@ async function carregarAnimais() {
 
                     <img
                         src="/logoAtualizada.png"
-                        alt="Logo ConectaPet"
+                        alt="Logo Adotaê"
                         class="logo-banner"
                     >
 
@@ -115,7 +115,7 @@ async function carregarAnimais() {
                 </h2>
 
                 <p>
-                    O <strong>ConectaPet</strong> é um programa
+                    O <strong>Adotaê</strong> é um programa
                     voluntário criado em parceria com os cursos
                     de <strong>Sistemas de Informação</strong> e
                     <strong>Medicina Veterinária</strong>, com o
@@ -131,7 +131,7 @@ async function carregarAnimais() {
                 </p>
 
                 <p>
-                    Através do ConectaPet, você pode conhecer
+                    Através do Adotaê, você pode conhecer
                     os animais, visualizar suas informações e
                     demonstrar interesse em realizar uma adoção.
                 </p>
@@ -304,7 +304,7 @@ async function carregarAnimais() {
                 </h2>
 
                 <p>
-                    Quer saber mais sobre o ConectaPet?
+                    Quer saber mais sobre o Adotaê?
                     Entre em contato conosco.
                 </p>
 
@@ -388,7 +388,7 @@ async function carregarAnimais() {
         <footer>
 
             <p>
-                🐾 ConectaPet
+                🐾 Adotaê
             </p>
 
             <p>

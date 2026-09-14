@@ -528,7 +528,7 @@ app.get(
         res.json({
 
             mensagem:
-                "🐾 ConectaPet Backend funcionando!"
+                "🐾 Adotaê Backend funcionando!"
 
         });
 
